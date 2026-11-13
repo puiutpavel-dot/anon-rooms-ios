@@ -3,9 +3,9 @@ import Foundation
 /// Completează valorile înainte de primul build.
 enum Config {
     /// Supabase → Project Settings → API → Project URL
-    static let supabaseURL = "https://PROIECTUL-TAU.supabase.co"
+    static let supabaseURL = "https://gzauitpswsxdqsewhcgf.supabase.co"
     /// Supabase → Project Settings → API Keys → cheia publică (anon / publishable)
-    static let supabaseKey = "CHEIA-PUBLICA"
+    static let supabaseKey = "sb_publishable_LmDOIJSQTfXz1lSbefxt_w_5O8bUp3y"
     /// Adresa afișată în aplicație la „Contact” (cerută de Apple pentru aplicații cu chat)
     static let contactEmail = "ADRESA-TA-DE-CONTACT"
 
