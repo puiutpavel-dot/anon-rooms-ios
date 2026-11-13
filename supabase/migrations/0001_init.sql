@@ -370,6 +370,12 @@ grant execute on function
   public.delete_my_data()
 to authenticated;
 
+-- Funcțiile interne (filtru, triggere) nu se apelează direct din aplicație.
+revoke execute on function
+  public.is_banned(uuid), public.mask_banned_words(text),
+  public.messages_before_insert(), public.profiles_check_nickname()
+from authenticated;
+
 -- ───────────────────────── Realtime ─────────────────────────
 
 alter publication supabase_realtime add table public.messages;
