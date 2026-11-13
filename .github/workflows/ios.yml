@@ -7,7 +7,7 @@
 # Secrete necesare pentru testflight (Settings → Secrets and variables → Actions):
 #   ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (conținutul fișierului AuthKey_XXXX.p8, cheie cu rol Admin)
 #
-# Minute: repo-ul e privat, deci minutele de macOS se scad din cele gratuite ale contului.
+# Minute: repo-ul e public, deci build-urile pe GitHub Actions sunt gratuite.
 name: iOS
 
 on:
