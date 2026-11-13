@@ -1,7 +1,7 @@
 # Anon Rooms
 
 Aplicație iOS cu camere de discuții anonime: camere publice pe teme și camere private cu cod de invitație.
-SwiftUI + Supabase, build prin Codemagic (fără Mac). Interfața e în 8 limbi și ia automat limba telefonului:
+SwiftUI + Supabase, build prin GitHub Actions (fără Mac). Interfața e în 8 limbi și ia automat limba telefonului:
 engleză, română, spaniolă, franceză, germană, italiană, portugheză și arabă (cu afișare de la dreapta la stânga).
 
 ## Ce face
@@ -28,7 +28,8 @@ AnonRooms/               codul aplicației (SwiftUI)
   Models.swift           modele de date
 supabase/migrations/     schema bazei de date
 project.yml              din el se generează proiectul Xcode (XcodeGen)
-codemagic.yaml           build și trimitere în TestFlight
+.github/workflows/ios.yml   build pe GitHub Actions: verificare și trimitere în TestFlight
+scripts/                 pașii de build, semnare și App Store Connect
 ```
 
 ## Pornire
@@ -37,7 +38,8 @@ codemagic.yaml           build și trimitere în TestFlight
    apoi rulezi `supabase/migrations/0001_init.sql` în SQL Editor.
 2. **Config.swift**: pui Project URL, cheia publică și adresa de contact.
 3. **Apple**: înregistrezi bundle ID-ul `ro.draghicioiu.anonrooms` și creezi aplicația în App Store Connect.
-4. **Codemagic**: adaugi repo-ul, urmezi pașii din capul fișierului `codemagic.yaml`, pornești build-ul.
+4. **GitHub Actions**: pui secretele `ASC_KEY_ID`, `ASC_ISSUER_ID` și `ASC_PRIVATE_KEY` la Settings → Secrets and variables → Actions,
+   apoi Actions → „iOS” → Run workflow → `testflight`. Varianta `verificare` doar compilează și nu are nevoie de secrete.
 5. **Admin**: după ce deschizi aplicația pe telefon și îți alegi porecla, rulezi în SQL Editor:
    ```sql
    insert into public.admins (user_id)

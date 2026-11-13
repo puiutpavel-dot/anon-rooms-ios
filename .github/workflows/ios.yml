@@ -1,0 +1,89 @@
+# Build iOS pe GitHub Actions, fără Mac și fără Codemagic.
+# Pornire: GitHub → Actions → „iOS” → Run workflow → alegi acțiunea.
+#   verificare  – generează proiectul și compilează pentru simulator (nu are nevoie de secrete)
+#   testflight  – verificare + build semnat urcat în TestFlight
+# La fiecare push pe main care atinge codul rulează automat „verificare”.
+#
+# Secrete necesare pentru testflight (Settings → Secrets and variables → Actions):
+#   ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (conținutul fișierului AuthKey_XXXX.p8, cheie cu rol Admin)
+#
+# Minute: repo-ul e privat, deci minutele de macOS se scad din cele gratuite ale contului.
+name: iOS
+
+on:
+  workflow_dispatch:
+    inputs:
+      actiune:
+        description: Ce rulez
+        type: choice
+        options: [verificare, testflight]
+        default: verificare
+  push:
+    branches: [main]
+    paths: ["AnonRooms/**", "project.yml", "scripts/**", ".github/workflows/ios.yml"]
+
+concurrency:
+  group: ios
+  cancel-in-progress: true
+
+env:
+  BUNDLE_ID: ro.draghicioiu.anonrooms
+  APP_NAME: AnonRooms
+  OUT_DIR: ${{ github.workspace }}/ci-out
+  ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+  ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+  ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+
+jobs:
+  ios:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Xcode (cea mai nouă versiune de pe mașină)
+        run: |
+          XC=$(ls -d /Applications/Xcode_*.app | grep -v -i beta | sort -V | tail -1)
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
+
+      - name: Verifică secretele
+        if: inputs.actiune == 'testflight'
+        run: |
+          missing=""
+          [ -n "$ASC_KEY_ID" ] || missing="$missing ASC_KEY_ID"
+          [ -n "$ASC_ISSUER_ID" ] || missing="$missing ASC_ISSUER_ID"
+          [ -n "$ASC_PRIVATE_KEY" ] || missing="$missing ASC_PRIVATE_KEY"
+          [ -z "$missing" ] || { echo "::error::Lipsesc secretele:$missing"; exit 1; }
+
+      - name: Generează proiectul Xcode
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Build pentru simulator
+        run: bash scripts/ci/sim_build.sh
+
+      - uses: actions/setup-python@v5
+        if: inputs.actiune == 'testflight'
+        with:
+          python-version: "3.12"
+
+      - name: App Store Connect — Bundle ID, echipă, număr de build
+        if: inputs.actiune == 'testflight'
+        run: |
+          pip install -q pyjwt cryptography
+          python scripts/asc_prepare.py
+
+      - name: Arhivă semnată + urcare în TestFlight
+        if: inputs.actiune == 'testflight'
+        run: bash scripts/ci/archive_upload.sh
+
+      - name: Jurnale
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jurnale-${{ inputs.actiune || 'push' }}-${{ github.run_number }}
+          if-no-files-found: ignore
+          retention-days: 14
+          path: ci-out/*.log

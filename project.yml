@@ -41,7 +41,7 @@ targets:
         SWIFT_VERSION: "5.0"
         TARGETED_DEVICE_FAMILY: "1"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-        CODE_SIGN_STYLE: Manual
+        CODE_SIGN_STYLE: Automatic
 schemes:
   AnonRooms:
     build:
