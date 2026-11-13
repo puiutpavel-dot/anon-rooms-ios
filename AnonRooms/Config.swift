@@ -7,7 +7,7 @@ enum Config {
     /// Supabase → Project Settings → API Keys → cheia publică (anon / publishable)
     static let supabaseKey = "sb_publishable_LmDOIJSQTfXz1lSbefxt_w_5O8bUp3y"
     /// Adresa afișată în aplicație la „Contact” (cerută de Apple pentru aplicații cu chat)
-    static let contactEmail = "ADRESA-TA-DE-CONTACT"
+    static let contactEmail = "puiutpavel@gmail.com"
 
     /// Cheile regulilor; textele sunt în Localizable.strings, pentru fiecare limbă.
     static let rules = ["rule.1", "rule.2", "rule.3", "rule.4", "rule.5"]
