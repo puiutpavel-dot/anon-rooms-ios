@@ -1,0 +1,10 @@
+.DS_Store
+build/
+DerivedData/
+*.xcodeproj
+AnonRooms/Info.plist
+xcuserdata/
+*.ipa
+*.dSYM.zip
+*.p8
+.env
